@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>YoutubeCulvert</RootNamespace>
+    <AssemblyName>YoutubeCulvert</AssemblyName>
+    <Description>InnerTube implementation, parsers, services, authentication and downloader for YoutubeCulvert.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YoutubeCulvert.Abstractions\YoutubeCulvert.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="YoutubeCulvert.Tests" />
+    <InternalsVisibleTo Include="YoutubeCulvert.Testing" />
+    <InternalsVisibleTo Include="YoutubeCulvert.DependencyInjection" />
+    <InternalsVisibleTo Include="YoutubeCulvert.Telemetry" />
+  </ItemGroup>
+
+</Project>

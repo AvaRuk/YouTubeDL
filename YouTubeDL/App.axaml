@@ -1,0 +1,44 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="YouTubeDL.App"
+             RequestedThemeVariant="Default">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="AppAcrylicTint">#F4F4F7</Color>
+                    <SolidColorBrush x:Key="AppWindowBrush" Color="#CCF4F4F7" />
+                    <SolidColorBrush x:Key="AppWindowFallbackBrush" Color="#FFF4F4F7" />
+                    <SolidColorBrush x:Key="AppSidebarBrush" Color="#B8FFFFFF" />
+                    <SolidColorBrush x:Key="AppContentBrush" Color="#A6FFFFFF" />
+                    <SolidColorBrush x:Key="AppCardBrush" Color="#D9F7F7FA" />
+                    <SolidColorBrush x:Key="AppBorderBrush" Color="#33000000" />
+                    <SolidColorBrush x:Key="AppNavSelectedBrush" Color="#334F8CFF" />
+                    <SolidColorBrush x:Key="AppNavHoverBrush" Color="#1F000000" />
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#FF2563EB" />
+                    <SolidColorBrush x:Key="AppMutedBrush" Color="#99000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="AppAcrylicTint">#131318</Color>
+                    <SolidColorBrush x:Key="AppWindowBrush" Color="#CC131318" />
+                    <SolidColorBrush x:Key="AppWindowFallbackBrush" Color="#FF131318" />
+                    <SolidColorBrush x:Key="AppSidebarBrush" Color="#B818181D" />
+                    <SolidColorBrush x:Key="AppContentBrush" Color="#A61C1C22" />
+                    <SolidColorBrush x:Key="AppCardBrush" Color="#D924242B" />
+                    <SolidColorBrush x:Key="AppBorderBrush" Color="#33FFFFFF" />
+                    <SolidColorBrush x:Key="AppNavSelectedBrush" Color="#334F8CFF" />
+                    <SolidColorBrush x:Key="AppNavHoverBrush" Color="#1FFFFFFF" />
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#FF60A5FA" />
+                    <SolidColorBrush x:Key="AppMutedBrush" Color="#99FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>
+
+

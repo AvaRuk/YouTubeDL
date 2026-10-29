@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>YoutubeCulvert</RootNamespace>
+    <Description>Public contracts, DTOs, options, exceptions and Result types for YoutubeCulvert.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="YoutubeCulvert" />
+    <InternalsVisibleTo Include="YoutubeCulvert.Tests" />
+    <InternalsVisibleTo Include="YoutubeCulvert.Testing" />
+  </ItemGroup>
+
+</Project>

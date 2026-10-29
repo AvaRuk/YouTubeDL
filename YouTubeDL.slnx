@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="YouTubeDL/YouTubeDL.csproj" />
+  </Folder>
+  <Folder Name="/lib/">
+    <Project Path="YoutubeCulvert/src/YoutubeCulvert.Abstractions/YoutubeCulvert.Abstractions.csproj" />
+    <Project Path="YoutubeCulvert/src/YoutubeCulvert/YoutubeCulvert.csproj" />
+  </Folder>
+</Solution>

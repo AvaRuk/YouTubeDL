@@ -1,0 +1,644 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:chrome="using:Avalonia.Controls.Chrome"
+        x:Class="YouTubeDL.MainWindow"
+        x:CompileBindings="False"
+        Title="{DynamicResource AppTitle}"
+        Width="1120"
+        Height="760"
+        MinWidth="940"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        TransparencyLevelHint="AcrylicBlur,Blur,Transparent"
+        TransparencyBackgroundFallback="{DynamicResource AppWindowFallbackBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="36"
+        Background="Transparent">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="TitleBarBackgroundBrush" Color="Transparent" />
+    </Window.Resources>
+
+	<Window.Styles>
+		<Style Selector="Border.card">
+			<Setter Property="Background" Value="{DynamicResource AppCardBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="14" />
+			<Setter Property="Padding" Value="16" />
+		</Style>
+		<Style Selector="TextBlock.header">
+			<Setter Property="FontSize" Value="24" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+		</Style>
+		<Style Selector="TextBlock.section">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="Margin" Value="0,4,0,6" />
+		</Style>
+		<Style Selector="TextBlock.muted">
+			<Setter Property="Opacity" Value="0.7" />
+		</Style>
+		<Style Selector="ListBoxItem">
+			<Setter Property="Padding" Value="8,6" />
+		</Style>
+	</Window.Styles>
+
+	<Panel>
+        <Grid RowDefinitions="*,Auto" Margin="14,50,14,14">
+            <Grid ColumnDefinitions="210,*">
+                <!-- Sidebar -->
+                <Border Grid.Column="0"
+                        Background="{DynamicResource AppSidebarBrush}"
+                        BorderBrush="{DynamicResource AppBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="10">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="12,14,12,18" Spacing="2">
+                            <TextBlock Text="{DynamicResource AppTitle}" FontSize="24" FontWeight="Bold" />
+                            <TextBlock Text="{DynamicResource AppSubtitle}" FontSize="12" Opacity="0.6" />
+                        </StackPanel>
+
+                        <ListBox DockPanel.Dock="Top"
+                                 SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                                 Background="Transparent"
+                                 BorderThickness="0">
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="⤓" FontSize="16" Width="22" />
+                                    <TextBlock Text="{DynamicResource TabDownload}" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="☰" FontSize="16" Width="22" />
+                                    <TextBlock Text="{DynamicResource TabQueue}" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="◉" FontSize="16" Width="22" />
+                                    <TextBlock Text="{DynamicResource TabAccount}" />
+                                </StackPanel>
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="⚙" FontSize="16" Width="22" />
+                                    <TextBlock Text="{DynamicResource TabSettings}" />
+                                </StackPanel>
+                            </ListBoxItem>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- Content -->
+                <Border Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Background="{DynamicResource AppContentBrush}"
+                        BorderBrush="{DynamicResource AppBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="20">
+                    <Grid>
+                        <!-- ======================= DOWNLOAD LANDING ======================= -->
+                        <StackPanel IsVisible="{Binding IsDownloadPage}"
+                                    Spacing="14"
+                                    MaxWidth="760"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top">
+                            <TextBlock Text="{DynamicResource DownloadHeader}" Classes="header" />
+                            <TextBlock Text="{DynamicResource DownloadLandingSubtitle}"
+                                       Classes="muted"
+                                       TextWrapping="Wrap" />
+
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                                <TextBox x:Name="UrlTextBox"
+                                         Text="{Binding Download.Input, Mode=TwoWay}"
+                                         PlaceholderText="{DynamicResource UrlWatermark}"
+                                         KeyDown="OnUrlKeyDown" />
+                                <Button Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        MinWidth="120"
+                                        Content="{DynamicResource SearchVideo}"
+                                        Classes="accent"
+                                        Command="{Binding Download.SearchCommand}" />
+                            </Grid>
+
+                            <TextBlock Text="{DynamicResource DownloadLandingHint}"
+                                       Classes="muted"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+
+                            <TextBlock Text="{Binding Download.StatusText}"
+                                       IsVisible="{Binding Download.HasStatus}"
+                                       Foreground="{DynamicResource AppAccentBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!-- ======================= QUEUE ======================= -->
+                        <Grid IsVisible="{Binding IsQueuePage}" RowDefinitions="Auto,Auto,*" RowSpacing="10">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{DynamicResource QueueHeader}" Classes="header" />
+                                    <TextBlock Text="{Binding Queue.SummaryText}" Classes="muted" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button Content="{DynamicResource QueuePauseAll}" Command="{Binding Queue.PauseAllCommand}" />
+                                    <Button Content="{DynamicResource QueueResumeAll}" Command="{Binding Queue.ResumeAllCommand}" />
+                                    <Button Content="{DynamicResource QueueClearFinished}" Command="{Binding Queue.ClearFinishedCommand}" />
+                                    <Button Content="{DynamicResource QueueExport}" Click="OnExportQueue" />
+                                    <Button Content="{DynamicResource QueueImport}" Click="OnImportQueue" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Grid.Row="1" ColumnDefinitions="*,160,Auto,Auto,Auto" ColumnSpacing="8">
+                                <TextBox Text="{Binding Queue.SearchText, Mode=TwoWay}"
+                                         PlaceholderText="{DynamicResource QueueSearchWatermark}" />
+                                <ComboBox Grid.Column="1" SelectedIndex="{Binding Queue.StatusFilterIndex, Mode=TwoWay}">
+                                    <ComboBoxItem Content="{DynamicResource QueueFilterAll}" />
+                                    <ComboBoxItem Content="{DynamicResource QueueFilterActive}" />
+                                    <ComboBoxItem Content="{DynamicResource QueueFilterQueued}" />
+                                    <ComboBoxItem Content="{DynamicResource QueueFilterCompleted}" />
+                                    <ComboBoxItem Content="{DynamicResource QueueFilterFailed}" />
+                                </ComboBox>
+                                <Button Grid.Column="2" Content="{DynamicResource SelectAll}" Command="{Binding Queue.SelectAllCommand}" />
+                                <Button Grid.Column="3" Content="{DynamicResource QueueCancelSelected}" Command="{Binding Queue.CancelSelectedCommand}" />
+                                <Button Grid.Column="4" Content="{DynamicResource QueueRemoveSelected}" Command="{Binding Queue.RemoveSelectedCommand}" />
+                            </Grid>
+
+                            <ListBox Grid.Row="2"
+                                     ItemsSource="{Binding Queue.VisibleItems}"
+                                     SelectedItem="{Binding Queue.SelectedItem, Mode=TwoWay}"
+                                     Background="Transparent"
+                                     BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Classes="card" Margin="0,0,0,6" Padding="12">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                                                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                          VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
+                                                    <TextBlock Text="{Binding DisplayText}" FontWeight="SemiBold"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding StatusText}" Classes="muted" TextWrapping="Wrap" />
+                                                    <TextBlock Text="{Binding DetailText}" Classes="muted" FontSize="11"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="6">
+                                                    <Button Content="{DynamicResource QueuePause}" Command="{Binding PauseCommand}" />
+                                                    <Button Content="{DynamicResource QueueResume}" Command="{Binding ResumeCommand}" />
+                                                    <Button Content="{DynamicResource Cancel}" Command="{Binding CancelCommand}" />
+                                                    <Button Content="{DynamicResource OpenFolder}" Command="{Binding OpenCommand}" />
+                                                </StackPanel>
+                                                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                                      ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,8,0,0">
+                                                    <ProgressBar Grid.Column="0" Minimum="0" Maximum="1" Value="{Binding Progress}"
+                                                                 Height="6" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding ProgressText}" Margin="10,0,0,0" Classes="muted" />
+                                                    <TextBlock Grid.Column="2" Text="{Binding SpeedText}" Margin="12,0,0,0" Classes="muted" />
+                                                    <TextBlock Grid.Column="3" Text="{Binding EtaText}" Margin="12,0,0,0" Classes="muted" />
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+
+                        <!-- ======================= ACCOUNT ======================= -->
+                        <ScrollViewer IsVisible="{Binding IsAccountPage}">
+                            <StackPanel Spacing="14" MaxWidth="760" HorizontalAlignment="Left">
+                                <TextBlock Text="{DynamicResource AccountHeader}" Classes="header" />
+                                <TextBlock Text="{DynamicResource AccountSubtitle}" Classes="muted" TextWrapping="Wrap" />
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{Binding Account.StatusText}" FontSize="16" FontWeight="SemiBold" />
+
+                                        <StackPanel IsVisible="{Binding Account.IsSignedIn}" Spacing="4" Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding Account.AccountName}" FontSize="15" />
+                                            <TextBlock Text="{Binding Account.AccountHandle}" Classes="muted"
+                                                       IsVisible="{Binding Account.HasAccountHandle}" />
+                                            <TextBlock Text="{Binding Account.AccountEmail}" Classes="muted"
+                                                       IsVisible="{Binding Account.HasAccountEmail}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                                                <Button Content="{DynamicResource Refresh}" Command="{Binding Account.RefreshCommand}" />
+                                                <Button Content="{DynamicResource SignOut}" Command="{Binding Account.SignOutCommand}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card" IsVisible="{Binding Account.IsSignedOut}">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SignInGoogle}" Classes="section" />
+                                        <TextBlock Text="{DynamicResource SignInHint}" Classes="muted" TextWrapping="Wrap" />
+                                        <WrapPanel>
+                                            <Button Content="{DynamicResource SignInGoogle}" Classes="accent"
+                                                    Command="{Binding Account.StartDeviceCodeCommand}" Margin="0,0,8,0" />
+                                            <Button Content="{DynamicResource CancelSignIn}" Command="{Binding Account.CancelDeviceCodeCommand}" />
+                                        </WrapPanel>
+                                        <Border IsVisible="{Binding Account.HasDeviceCode}" Background="{DynamicResource AppNavHoverBrush}"
+                                                CornerRadius="10" Padding="12">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="{DynamicResource DeviceCodeLabel}" Classes="muted" />
+                                                <TextBlock Text="{Binding Account.DeviceCode}" FontSize="28" FontWeight="Bold"
+                                                           FontFamily="Consolas" />
+                                                <TextBlock Text="{Binding Account.VerificationUrl}" Classes="muted" TextWrapping="Wrap" />
+                                                <Button Content="{DynamicResource OpenGooglePage}" Command="{Binding Account.OpenVerificationUrlCommand}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card" IsVisible="{Binding Account.IsSignedOut}">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource CookieSignInHeader}" Classes="section" />
+                                        <TextBox Text="{Binding Account.CookieHeader, Mode=TwoWay}"
+                                                 AcceptsReturn="True" MinHeight="70" TextWrapping="Wrap"
+                                                 PlaceholderText="{DynamicResource CookieHeaderWatermark}" />
+                                        <WrapPanel>
+                                            <Button Content="{DynamicResource SignInCookies}" Classes="accent" Margin="0,0,8,0"
+                                                    Command="{Binding Account.SignInCookieCommand}" />
+                                            <Button Content="{DynamicResource ImportCookieFile}" Click="OnImportCookies" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- ======================= SETTINGS ======================= -->
+                        <ScrollViewer IsVisible="{Binding IsSettingsPage}">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{DynamicResource SettingsHeader}" Classes="header" />
+                                        <TextBlock Text="{Binding Settings.StatusText}" Classes="muted" />
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Content="{DynamicResource OpenDataFolder}"
+                                            Command="{Binding Settings.OpenDataFolderCommand}" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsCategoryFiles}" Classes="section" />
+                                        <Grid ColumnDefinitions="200,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource FileNameLabel}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                                                     Text="{Binding Settings.FileNameTemplate, Mode=TwoWay}"
+                                                     PlaceholderText="{DynamicResource FileNameWatermark}" />
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                                       Text="{DynamicResource SettingsHelpFileName}" Classes="muted" FontSize="11"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource VideoFolderLabel}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Settings.VideoFolder, Mode=TwoWay}" />
+                                            <Button Grid.Row="2" Grid.Column="2" Content="{DynamicResource BrowseShort}" Click="OnBrowseVideoFolder" />
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource MusicFolderLabel}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Settings.MusicFolder, Mode=TwoWay}" />
+                                            <Button Grid.Row="3" Grid.Column="2" Content="{DynamicResource BrowseShort}" Click="OnBrowseMusicFolder" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsCategoryDownloads}" Classes="section" />
+                                        <Grid ColumnDefinitions="220,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource SettingsMaxConcurrent}" VerticalAlignment="Center" />
+                                            <Slider Grid.Row="0" Grid.Column="1" Minimum="1" Maximum="8" TickFrequency="1"
+                                                    IsSnapToTickEnabled="True"
+                                                    Value="{Binding Settings.MaxConcurrentDownloads, Mode=TwoWay}" />
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Settings.MaxConcurrentDownloads}"
+                                                       VerticalAlignment="Center" Margin="8,0,0,0" />
+
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource SettingsAudioConvert}" VerticalAlignment="Center" />
+                                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                                      ItemsSource="{Binding Settings.AudioConvertFormats}"
+                                                      SelectedItem="{Binding Settings.AudioConvertFormat, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Display}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource SettingsProxy}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                                                     Text="{Binding Settings.Proxy, Mode=TwoWay}"
+                                                     PlaceholderText="{DynamicResource SettingsProxyWatermark}" />
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                                       Text="{DynamicResource SettingsProxyHelp}" Classes="muted" FontSize="11"
+                                                       TextWrapping="Wrap" />
+                                        </Grid>
+
+                                        <WrapPanel>
+                                            <CheckBox Content="{DynamicResource SettingsSkipExisting}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.SkipExisting, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsOverwrite}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.OverwriteExisting, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsOpenFolder}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.OpenFolderAfterDownload, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsNotify}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.NotifyOnComplete, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsPreferOriginalTrack}"
+                                                      IsChecked="{Binding Settings.PreferOriginalAudioTrack, Mode=TwoWay}" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsArtifactsHeader}" Classes="section" />
+                                        <WrapPanel>
+                                            <CheckBox Content="{DynamicResource SettingsDownloadSubtitles}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.DownloadSubtitles, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsSaveThumbnail}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.SaveThumbnail, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsEmbedMetadata}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.EmbedMetadata, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsSaveDescription}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.SaveDescription, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsSaveJson}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.SaveJsonMetadata, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsSaveChapters}"
+                                                      IsChecked="{Binding Settings.SaveChapters, Mode=TwoWay}" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsFfmpegSection}" Classes="section" />
+                                        <TextBlock Text="{Binding Settings.FfmpegStatusText}" Classes="muted" TextWrapping="Wrap" />
+                                        <Grid ColumnDefinitions="200,*,Auto" ColumnSpacing="8">
+                                            <TextBlock Text="{DynamicResource SettingsFfmpegLabel}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Column="1" Text="{Binding Settings.FfmpegPath, Mode=TwoWay}"
+                                                     PlaceholderText="{DynamicResource SettingsFfmpegWatermark}" />
+                                            <Button Grid.Column="2" Content="{DynamicResource BrowseShort}" Click="OnBrowseFfmpeg" />
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Content="{DynamicResource SettingsDownloadFfmpeg}" Classes="accent"
+                                                    Command="{Binding Settings.InstallFfmpegCommand}" />
+                                            <TextBlock Text="{Binding Settings.FfmpegProgressText}" VerticalAlignment="Center"
+                                                       Classes="muted" IsVisible="{Binding Settings.IsBusy}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsCategoryAutomation}" Classes="section" />
+                                        <WrapPanel>
+                                            <CheckBox Content="{DynamicResource SettingsWatchFolder}" Margin="0,0,18,0"
+                                                      IsChecked="{Binding Settings.WatchFolderEnabled, Mode=TwoWay}" />
+                                            <CheckBox Content="{DynamicResource SettingsClipboardWatch}"
+                                                      IsChecked="{Binding Settings.ClipboardWatchEnabled, Mode=TwoWay}" />
+                                        </WrapPanel>
+                                        <Grid ColumnDefinitions="200,*,200,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource SettingsScheduleStart}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.ScheduleStart, Mode=TwoWay}"
+                                                     PlaceholderText="02:00" />
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{DynamicResource SettingsScheduleStop}" VerticalAlignment="Center" Margin="16,0,0,0" />
+                                            <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Settings.ScheduleStop, Mode=TwoWay}"
+                                                     PlaceholderText="08:00" />
+
+                                            <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                                      Content="{DynamicResource SettingsSkipWorkHours}"
+                                                      IsChecked="{Binding Settings.SkipInWorkingHours, Mode=TwoWay}" />
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource SettingsWorkHours}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Settings.WorkHoursStart, Mode=TwoWay}" />
+                                            <TextBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Width="160"
+                                                     HorizontalAlignment="Left" Margin="16,0,0,0"
+                                                     Text="{Binding Settings.WorkHoursEnd, Mode=TwoWay}" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="card">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="{DynamicResource SettingsCategoryAppearance}" Classes="section" />
+                                        <Grid ColumnDefinitions="200,*,200,*" RowSpacing="8">
+                                            <TextBlock Grid.Column="0" Text="{DynamicResource LanguageLabel}" VerticalAlignment="Center" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding Settings.Languages}"
+                                                      SelectedItem="{Binding Settings.SelectedLanguage, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <TextBlock Grid.Column="2" Text="{DynamicResource ThemeLabel}" VerticalAlignment="Center" Margin="16,0,0,0" />
+                                            <ComboBox Grid.Column="3" ItemsSource="{Binding Settings.Themes}"
+                                                      SelectedItem="{Binding Settings.Theme, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Display}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Content="{DynamicResource SettingsReloadLanguages}"
+                                                    Command="{Binding Settings.ReloadLanguagesCommand}" />
+                                            <TextBlock Text="{Binding Settings.DataFolderText}" Classes="muted"
+                                                       VerticalAlignment="Center" FontSize="11" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Status bar -->
+            <Border Grid.Row="1" Margin="0,10,0,0" Classes="card" Padding="12,8">
+                <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="16">
+                    <TextBlock Text="{Binding HealthText}" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="{Binding LastSuccessText}" Classes="muted" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Text="{Binding Queue.CountersText}" Classes="muted" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="4" Text="{Binding Queue.SpeedText}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="5" Text="{Binding Queue.EtaText}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="6" Text="{Binding FreeSpaceText}" Classes="muted" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ======================= MODAL OVERLAY ======================= -->
+        <Panel IsVisible="{Binding Download.IsDialogOpen}">
+            <Border Background="#B0000000" />
+
+            <Border Width="980"
+                    Height="620"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource AppContentBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="18"
+                    Padding="20">
+                <Grid>
+                    <!-- Video dialog -->
+                    <Grid IsVisible="{Binding Download.IsVideoDialogOpen}" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{DynamicResource DownloadDialogHeader}" Classes="section" FontSize="18" />
+                            <Button Grid.Column="1" Content="✕" Command="{Binding Download.CloseDialogCommand}" />
+                        </Grid>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,360" ColumnSpacing="18">
+                            <ScrollViewer Grid.Column="0">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="{DynamicResource DialogDownloadOptions}" Classes="section" />
+                                    <ComboBox ItemsSource="{Binding Download.Options}"
+                                              SelectedItem="{Binding Download.SelectedOption, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Display}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+
+                                    <Grid ColumnDefinitions="90,*" IsVisible="{Binding Download.DialogIsStandalone}">
+                                        <TextBlock Text="{DynamicResource SaveToLabel}" VerticalAlignment="Center" />
+                                        <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="{Binding Download.OutputFolder}" TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center" />
+                                            <Button Grid.Column="1" Margin="8,0,0,0"
+                                                    Content="{DynamicResource BrowseShort}"
+                                                    Click="OnBrowseOutputFolder" />
+                                        </Grid>
+                                    </Grid>
+
+                                    <Expander Header="{DynamicResource DialogAdvanced}" IsExpanded="False"
+                                              IsVisible="{Binding Download.DialogIsStandalone}">
+                                        <StackPanel Spacing="8" Margin="0,6,0,0">
+                                            <Grid ColumnDefinitions="130,*">
+                                                <TextBlock Text="{DynamicResource FileNameLabel}" VerticalAlignment="Center" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding Download.FileNameTemplate, Mode=TwoWay}"
+                                                         PlaceholderText="{DynamicResource FileNameWatermark}" />
+                                            </Grid>
+                                            <WrapPanel>
+                                                <CheckBox Content="{DynamicResource SettingsDownloadSubtitles}" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Download.DownloadSubtitles, Mode=TwoWay}" />
+                                                <CheckBox Content="{DynamicResource SettingsSaveThumbnail}" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Download.SaveThumbnail, Mode=TwoWay}" />
+                                                <CheckBox Content="{DynamicResource SettingsEmbedMetadata}" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Download.EmbedMetadata, Mode=TwoWay}" />
+                                                <CheckBox Content="{DynamicResource SettingsSaveDescription}" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Download.SaveDescription, Mode=TwoWay}" />
+                                                <CheckBox Content="{DynamicResource SettingsSaveJson}" Margin="0,0,16,0"
+                                                          IsChecked="{Binding Download.SaveJsonMetadata, Mode=TwoWay}" />
+                                                <CheckBox Content="{DynamicResource SettingsSaveChapters}"
+                                                          IsChecked="{Binding Download.SaveChapters, Mode=TwoWay}" />
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Expander>
+                                </StackPanel>
+                            </ScrollViewer>
+
+                            <Border Grid.Column="1" Classes="card">
+                                <StackPanel Spacing="8">
+                                    <Border Height="180" CornerRadius="10" ClipToBounds="True"
+                                            Background="{DynamicResource AppNavHoverBrush}">
+                                        <Image Source="{Binding Download.PreviewThumbnail}" Stretch="UniformToFill" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Download.PreviewTitle}" FontSize="17" FontWeight="SemiBold"
+                                               TextWrapping="Wrap" MaxHeight="80" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Download.PreviewChannel}" Classes="muted" />
+                                    <TextBlock Text="{Binding Download.PreviewDuration}" Classes="muted" />
+                                    <TextBlock Text="{Binding Download.PreviewViews}" Classes="muted" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Content="{DynamicResource DialogBack}"
+                                    IsVisible="{Binding Download.IsEditingPlaylistItem}"
+                                    Command="{Binding Download.BackCommand}" />
+                            <Button Content="{DynamicResource Cancel}" Command="{Binding Download.CloseDialogCommand}" />
+                            <Button Content="{DynamicResource DialogDownload}" Classes="accent"
+                                    IsVisible="{Binding Download.DialogIsStandalone}"
+                                    Command="{Binding Download.DownloadCommand}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Playlist dialog -->
+                    <Grid IsVisible="{Binding Download.IsPlaylistDialogOpen}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="{Binding Download.PlaylistTitle}" Classes="section" FontSize="18"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Download.PlaylistSelectedText}" Classes="muted" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="✕" Command="{Binding Download.CloseDialogCommand}" />
+                        </Grid>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <ComboBox ItemsSource="{Binding Download.Options}"
+                                      SelectedItem="{Binding Download.PlaylistOption, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Display}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Grid.Column="1" Text="{Binding Download.PlaylistOutputFolder}"
+                                       MaxWidth="260" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                       Classes="muted" />
+                            <Button Grid.Column="2" Content="{DynamicResource BrowseShort}" Click="OnBrowseOutputFolder" />
+                        </Grid>
+
+                        <ListBox Grid.Row="2" ItemsSource="{Binding Download.PlaylistItems}"
+                                 Background="Transparent" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" Margin="0,2">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  VerticalAlignment="Center" />
+                                        <Button Grid.Column="1"
+                                                Command="{Binding ConfigureCommand}"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Padding="0"
+                                                HorizontalContentAlignment="Left"
+                                                HorizontalAlignment="Stretch">
+                                            <StackPanel Spacing="1">
+                                                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding ChannelTitle}" Classes="muted" FontSize="11" />
+                                            </StackPanel>
+                                        </Button>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center" MinWidth="60">
+                                            <TextBlock Text="{Binding DurationText}" Classes="muted" FontSize="11" />
+                                            <TextBlock Text="{Binding OptionDisplay}" Classes="muted" FontSize="11" />
+                                        </StackPanel>
+                                        <Button Grid.Column="3" Content="{DynamicResource ConfigureItem}"
+                                                Command="{Binding ConfigureCommand}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+                            <Button Content="{DynamicResource SelectAll}" Command="{Binding Download.SelectAllCommand}" />
+                            <Button Grid.Column="1" Content="{DynamicResource SelectNone}" Command="{Binding Download.SelectNoneCommand}" />
+                            <TextBlock Grid.Column="2" Text="{Binding Download.PlaylistStatus}"
+                                       IsVisible="{Binding Download.PlaylistHasStatus}"
+                                       Foreground="{DynamicResource AppAccentBrush}"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8">
+                                <Button Content="{DynamicResource Cancel}" Command="{Binding Download.CloseDialogCommand}" />
+                                <Button Content="{DynamicResource DialogDownloadPlaylist}" Classes="accent"
+                                        Command="{Binding Download.DownloadPlaylistCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Panel>
+    </Panel>
+</Window>
